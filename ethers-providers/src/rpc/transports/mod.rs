@@ -21,7 +21,7 @@ pub use retry::*;
 #[cfg(all(feature = "ws", not(feature = "legacy-ws")))]
 mod ws;
 #[cfg(all(feature = "ws", not(feature = "legacy-ws")))]
-pub use ws::{ConnectionDetails, WsClient as Ws, WsClientError};
+pub use ws::{ConnectionDetails, WebSocketConfig, WsClient as Ws, WsClientError};
 
 /// archival websocket
 #[cfg(feature = "legacy-ws")]

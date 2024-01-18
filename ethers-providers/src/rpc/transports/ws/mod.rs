@@ -9,6 +9,7 @@ use std::fmt;
 
 mod types;
 pub use types::ConnectionDetails;
+pub use types::WebSocketConfig;
 use types::*;
 
 mod error;
@@ -202,6 +203,37 @@ impl crate::Provider<WsClient> {
     ) -> Result<Self, ProviderError> {
         let conn = ConnectionDetails::new(url, Some(auth));
         let ws = crate::Ws::connect_with_reconnects(conn, reconnects).await?;
+        Ok(Self::new(ws))
+    }
+
+    /// Connect to a WS RPC provider with a custom websocket configuration
+    /// and a set number of reconnection attempts
+    /// See the [tungstenite docs](https://docs.rs/tungstenite/latest/tungstenite/protocol/struct.WebSocketConfig.html) for all avaible options.
+
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn connect_with_config_and_reconnects(
+        url: impl AsRef<str>,
+        config: impl Into<WebSocketConfig>,
+        reconnects: usize,
+    ) -> Result<Self, ProviderError> {
+        let conn = ConnectionDetails::new(url, None);
+        let ws = crate::Ws::connect_with_config_and_reconnects(conn, config, reconnects).await?;
+        Ok(Self::new(ws))
+    }
+
+    /// Connect to a WS RPC provider with a custom websocket configuration and authentication details
+    /// and a set number of reconnection attempts
+    /// See the [tungstenite docs](https://docs.rs/tungstenite/latest/tungstenite/protocol/struct.WebSocketConfig.html) for all avaible options.
+
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn connect_with_config_auth_and_reconnects(
+        url: impl AsRef<str>,
+        config: impl Into<WebSocketConfig>,
+        auth: Authorization,
+        reconnects: usize,
+    ) -> Result<Self, ProviderError> {
+        let conn = ConnectionDetails::new(url, Some(auth));
+        let ws = crate::Ws::connect_with_config_and_reconnects(conn, config, reconnects).await?;
         Ok(Self::new(ws))
     }
 }
